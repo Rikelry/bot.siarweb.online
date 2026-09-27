@@ -1,0 +1,20 @@
+[project]
+name = "bot-siarweb-online"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Rikelry", email = "153693133+Rikelry@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "playwright>=1.63.0",
+    "python-dotenv>=1.2.3",
+]
+
+[project.scripts]
+bot-siarweb-online = "bot_siarweb_online:main"
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"

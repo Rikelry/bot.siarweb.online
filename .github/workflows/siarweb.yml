@@ -1,0 +1,34 @@
+name: SIARWEB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  solicitar-refeicoes:
+    runs-on: ubuntu-latest
+
+    env:
+      MATRICULA: ${{ secrets.MATRICULA }}
+      DATA_NASC: ${{ secrets.DATA_NASC }}
+      PIN: ${{ secrets.PIN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Instalar dependências
+        run: uv sync
+
+      - name: Instalar Chromium
+        run: uv run playwright install --with-deps chromium
+
+      - name: Executar bot
+        run: uv run bot-siarweb-online
