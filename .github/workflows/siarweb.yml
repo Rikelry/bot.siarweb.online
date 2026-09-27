@@ -11,6 +11,8 @@ jobs:
       MATRICULA: ${{ secrets.MATRICULA }}
       DATA_NASC: ${{ secrets.DATA_NASC }}
       PIN: ${{ secrets.PIN }}
+      SIARWEB_URL: https://siarweb.online/index.html
+      DASHBOARD_URL: https://siarweb.online/app/dashboard.php
 
     steps:
       - name: Checkout
