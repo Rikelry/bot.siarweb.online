@@ -16,7 +16,7 @@ Bot em Python para automatizar a solicitação de refeições no sistema SIARWEB
 ## Tecnologias
 
 | Tecnologia                                                  |   Versão | Utilização                                                                    |
-| ----------------------------------------------------------- | -------: | ----------------------------------------------------------------------------- |
+| :---------------------------------------------------------: | :------- | ----------------------------------------------------------------------------- |
 | [Python](https://www.python.org/)                           |  `3.14+` | Linguagem principal do projeto                                                |
 | [uv](https://docs.astral.sh/uv/)                            | `latest` | Gerenciamento do projeto, dependências e ambiente virtual                     |
 | [Playwright](https://playwright.dev/python/)                | `1.63.0` | Automação do navegador e interação com o SIARWEB                              |
