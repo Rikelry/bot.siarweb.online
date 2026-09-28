@@ -124,7 +124,7 @@ def main():
             print("✓ Login realizado.")
 
             # Preenche o PIN
-            page.locator("#pin").press_sequentially(
+            page.locator("body").press_sequentially(
                 pin,
                 delay=100,
             )
