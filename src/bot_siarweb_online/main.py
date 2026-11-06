@@ -34,6 +34,21 @@ def solicitar_refeicao(page, tipo, dashboard_url):
 
     botao = formulario.locator('button[type="submit"]')
 
+    # Fecha o modal de publicidade, caso esteja aberto
+    modal_publicidade = page.locator("#modalPublicidade")
+
+    if modal_publicidade.is_visible():
+        modal_publicidade.locator(
+            "button[data-bs-dismiss='modal']"
+        ).click()
+
+        page.locator(".modal-backdrop").wait_for(
+            state="hidden",
+            timeout=10000,
+        )
+
+        print("✓ Modal de publicidade fechado.")
+
     if not botao.is_visible() or not botao.is_enabled():
         print(f"{tipo}: botão indisponível.")
         return False
@@ -123,21 +138,53 @@ def main():
 
             print("✓ Login realizado.")
 
-            # Preenche o PIN
-            page.locator("body").press_sequentially(
+            # Preenche o PIN pelo teclado virtual do SIARWEB
+            page.evaluate(
+                """pin => {
+                    for (const digit of pin) {
+                        addDigit(digit);
+                    }
+                }""",
                 pin,
-                delay=100,
+            )
+            page.wait_for_timeout(500)
+
+            # Aguarda os quatro dígitos serem registrados
+            page.wait_for_function(
+                "() => document.querySelector('#pinInput')?.value.length === 4"
             )
 
-            # Envia o PIN
-            page.locator("#btnPin").click()
-            page.wait_for_load_state("domcontentloaded")
+            # Diagnóstico do preenchimento do PIN
+            quantidade = len(page.locator("#pinInput").input_value())
+            botao_habilitado = page.locator("#btnPin").is_enabled()
+            formulario_existe = page.locator("#pinForm").count() > 0
 
-            if "/app/dashboard.php" not in page.url:
+            print("Quantidade de dígitos registrados:", quantidade)
+            print("Botão habilitado:", botao_habilitado)
+            print("Formulário encontrado:", formulario_existe)
+
+            if quantidade != 4 or not botao_habilitado or not formulario_existe:
+                print("PIN não preenchido corretamente. Envio cancelado.")
+                browser.close()
+                return
+
+            # Envia o PIN e aguarda o redirecionamento automático
+            page.locator("#btnPin").click()
+
+            try:
+                page.wait_for_url(
+                    "**/app/dashboard.php",
+                    timeout=15000,
+                    wait_until="domcontentloaded",
+                )
+            except Exception:
                 print("Falha na autenticação com o PIN.")
                 print("URL:", page.url)
                 browser.close()
                 return
+
+            print("✓ PIN validado.")
+            print("URL após envio:", page.url)
 
             print("✓ PIN autenticado.")
 
@@ -147,6 +194,25 @@ def main():
                 return
 
             print("✓ Dashboard carregado.")
+
+            # Aguarda o modal de publicidade aparecer e fecha
+            modal_publicidade = page.locator("#modalPublicidade")
+
+            modal_publicidade.wait_for(
+                state="visible",
+                timeout=10000,
+            )
+
+            modal_publicidade.locator(
+                "button[data-bs-dismiss='modal']"
+            ).click()
+
+            page.locator(".modal-backdrop").wait_for(
+                state="hidden",
+                timeout=10000,
+            )
+
+            print("✓ Modal de publicidade fechado.")
 
             # Verifica as refeições
             almoco_solicitado = refeicao_ja_solicitada(page, "ALMOCO")
